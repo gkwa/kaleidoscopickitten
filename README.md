@@ -2,7 +2,7 @@
 
 Query and modify YAML frontmatter in markdown files using yq expressions.
 
-Uses yqlib syntax from https://mikefarah.gitbook.io/yq/.
+Uses yqlib syntax from https://mikefarah.gitbook.io/yq/v/v4.x/.
 
 ## Usage
 
