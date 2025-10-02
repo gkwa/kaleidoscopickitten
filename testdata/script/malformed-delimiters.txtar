@@ -1,7 +1,7 @@
 # Test file with only opening delimiter
 cp only-opening.md only-opening.md.backup
 
-! exec kaleidoscopickitten frontmatter view '.title' only-opening.md
+! exec kaleidoscopickitten frontmatter print '.title' only-opening.md
 stderr 'invalid frontmatter'
 cmp only-opening.md only-opening.md.backup
 
@@ -13,7 +13,7 @@ stderr 'invalid frontmatter'
 # Test file with no delimiters but looks like frontmatter
 cp no-delimiters.md no-delimiters.md.backup
 
-exec kaleidoscopickitten frontmatter view '.title' no-delimiters.md
+exec kaleidoscopickitten frontmatter print '.title' no-delimiters.md
 cmp stdout empty.golden
 ! stderr .
 cmp no-delimiters.md no-delimiters.md.backup

@@ -1,7 +1,7 @@
 # Test file with invalid YAML syntax in frontmatter
 cp invalid-yaml.md invalid-yaml.md.backup
 
-! exec kaleidoscopickitten frontmatter view '.title' invalid-yaml.md
+! exec kaleidoscopickitten frontmatter print '.title' invalid-yaml.md
 stderr 'yaml'
 cmp invalid-yaml.md invalid-yaml.md.backup
 

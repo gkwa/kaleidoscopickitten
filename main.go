@@ -88,11 +88,11 @@ func run(extractor FrontmatterExtractor, expression, mdContent string, fullFile 
 	return reconstructFile(processedFrontmatter, result.Body), nil
 }
 
-func createViewCommand() *cobra.Command {
+func createPrintCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:     "view [expression] <file.md>",
-		Aliases: []string{"v"},
-		Short:   "View frontmatter (read-only)",
+		Use:     "print [expression] <file.md>",
+		Aliases: []string{"p"},
+		Short:   "Print frontmatter (read-only)",
 		Long:    "Query and display YAML frontmatter without modifying the file. If no expression is provided, defaults to '.' (show all).",
 		Args:    cobra.RangeArgs(1, 2),
 		Run: func(cmd *cobra.Command, args []string) {
@@ -134,10 +134,10 @@ func main() {
 		Use:     "frontmatter [expression] <file.md>",
 		Aliases: []string{"fm"},
 		Short:   "Work with YAML frontmatter",
-		Long:    "Query and modify YAML frontmatter in markdown files. Defaults to view mode if no subcommand specified.",
+		Long:    "Query and modify YAML frontmatter in markdown files. Defaults to print mode if no subcommand specified.",
 		Args:    cobra.RangeArgs(1, 2),
 		Run: func(cmd *cobra.Command, args []string) {
-			// Default to view behavior when no subcommand is specified
+			// Default to print behavior when no subcommand is specified
 			var expression, filename string
 
 			if len(args) == 1 {
@@ -164,7 +164,7 @@ func main() {
 		},
 	}
 
-	viewCmd := createViewCommand()
+	printCmd := createPrintCommand()
 
 	editCmd := &cobra.Command{
 		Use:     "edit <expression> <file.md>",
@@ -198,7 +198,7 @@ func main() {
 		},
 	}
 
-	frontmatterCmd.AddCommand(viewCmd)
+	frontmatterCmd.AddCommand(printCmd)
 	frontmatterCmd.AddCommand(editCmd)
 	rootCmd.AddCommand(frontmatterCmd)
 
