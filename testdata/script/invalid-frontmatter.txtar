@@ -1,7 +1,7 @@
 # Test handling of invalid frontmatter (scalar value instead of object)
 cp invalid-scalar.md invalid-scalar.md.backup
 
-! exec kaleidoscopickitten frontmatter print '.title' invalid-scalar.md
+! exec kaleidoscopickitten frontmatter print .title invalid-scalar.md
 stderr 'invalid frontmatter'
 cmp invalid-scalar.md invalid-scalar.md.backup
 

@@ -19,8 +19,8 @@ kaleidoscopickitten fm p .title file.md
 kaleidoscopickitten fm p .metadata.category file.md
 
 # Query arrays
-kaleidoscopickitten fm .tags file.md
-kaleidoscopickitten fm '.tags | length' file.md
+kaleidoscopickitten fm print .tags file.md
+kaleidoscopickitten fm p '.tags | length' file.md
 kaleidoscopickitten fm '.tags[0]' file.md
 
 # Modify values (in-place editing)

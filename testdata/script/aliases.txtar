@@ -2,13 +2,13 @@
 cp input.md input.md.backup
 
 # Test fm alias for frontmatter
-exec kaleidoscopickitten fm print '.title' input.md
+exec kaleidoscopickitten fm print .title input.md
 cmp stdout title.golden
 ! stderr .
 cmp input.md input.md.backup
 
 # Test p alias for print
-exec kaleidoscopickitten fm p '.author' input.md
+exec kaleidoscopickitten fm p .author input.md
 cmp stdout author.golden
 ! stderr .
 cmp input.md input.md.backup
@@ -31,7 +31,7 @@ cmp stdout all.golden
 ! stderr .
 
 # Test fm with expression but no subcommand
-exec kaleidoscopickitten fm '.title' input.md
+exec kaleidoscopickitten fm .title input.md
 cmp stdout title.golden
 ! stderr .
 

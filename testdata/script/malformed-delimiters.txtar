@@ -1,7 +1,7 @@
 # Test file with only opening delimiter
 cp only-opening.md only-opening.md.backup
 
-! exec kaleidoscopickitten frontmatter print '.title' only-opening.md
+! exec kaleidoscopickitten frontmatter print .title only-opening.md
 stderr 'invalid frontmatter'
 cmp only-opening.md only-opening.md.backup
 
