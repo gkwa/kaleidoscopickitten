@@ -25,6 +25,16 @@ exec kaleidoscopickitten fm v input.md
 cmp stdout all.golden
 ! stderr .
 
+# Test fm without subcommand (defaults to view with '.')
+exec kaleidoscopickitten fm input.md
+cmp stdout all.golden
+! stderr .
+
+# Test fm with expression but no subcommand
+exec kaleidoscopickitten fm '.title' input.md
+cmp stdout title.golden
+! stderr .
+
 -- input.md --
 ---
 title: My Blog Post

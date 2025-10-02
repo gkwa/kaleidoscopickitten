@@ -88,21 +88,8 @@ func run(extractor FrontmatterExtractor, expression, mdContent string, fullFile 
 	return reconstructFile(processedFrontmatter, result.Body), nil
 }
 
-func main() {
-	rootCmd := &cobra.Command{
-		Use:   "kaleidoscopickitten",
-		Short: "Query and modify YAML frontmatter in markdown files",
-		Long:  "Query and modify YAML frontmatter in markdown files using yq expressions.",
-	}
-
-	frontmatterCmd := &cobra.Command{
-		Use:     "frontmatter",
-		Aliases: []string{"fm"},
-		Short:   "Work with YAML frontmatter",
-		Long:    "Query and modify YAML frontmatter in markdown files.",
-	}
-
-	viewCmd := &cobra.Command{
+func createViewCommand() *cobra.Command {
+	return &cobra.Command{
 		Use:     "view [expression] <file.md>",
 		Aliases: []string{"v"},
 		Short:   "View frontmatter (read-only)",
@@ -134,6 +121,50 @@ func main() {
 			fmt.Print(result)
 		},
 	}
+}
+
+func main() {
+	rootCmd := &cobra.Command{
+		Use:   "kaleidoscopickitten",
+		Short: "Query and modify YAML frontmatter in markdown files",
+		Long:  "Query and modify YAML frontmatter in markdown files using yq expressions.",
+	}
+
+	frontmatterCmd := &cobra.Command{
+		Use:     "frontmatter [expression] <file.md>",
+		Aliases: []string{"fm"},
+		Short:   "Work with YAML frontmatter",
+		Long:    "Query and modify YAML frontmatter in markdown files. Defaults to view mode if no subcommand specified.",
+		Args:    cobra.RangeArgs(1, 2),
+		Run: func(cmd *cobra.Command, args []string) {
+			// Default to view behavior when no subcommand is specified
+			var expression, filename string
+
+			if len(args) == 1 {
+				expression = "."
+				filename = args[0]
+			} else {
+				expression = args[0]
+				filename = args[1]
+			}
+
+			mdBytes, err := os.ReadFile(filename)
+			if err != nil {
+				log.Fatalf("failed to read file %s: %v", filename, err)
+			}
+			mdContent := string(mdBytes)
+
+			extractor := NewYAMLFrontmatterExtractor()
+			result, err := run(extractor, expression, mdContent, false)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Print(result)
+		},
+	}
+
+	viewCmd := createViewCommand()
 
 	editCmd := &cobra.Command{
 		Use:     "edit <expression> <file.md>",
