@@ -1,0 +1,37 @@
+# Test complex yq expressions
+exec kaleidoscopickitten '.tags | length' input.md
+cmp stdout tags-length.golden
+! stderr .
+
+exec kaleidoscopickitten '.tags[0]' input.md
+cmp stdout first-tag.golden
+! stderr .
+
+exec kaleidoscopickitten 'select(.draft == false) | .title' input.md
+cmp stdout conditional.golden
+! stderr .
+
+exec kaleidoscopickitten 'select(.draft == true) | .title' input.md
+cmp stdout empty.golden
+! stderr .
+
+-- input.md --
+---
+title: Complex Post
+draft: false
+tags:
+  - golang
+  - yq
+  - markdown
+metadata:
+  views: 1234
+---
+
+# Content
+-- tags-length.golden --
+3
+-- first-tag.golden --
+golang
+-- empty.golden --
+-- conditional.golden --
+Complex Post

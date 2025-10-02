@@ -1,0 +1,39 @@
+# Test modifying frontmatter values
+exec kaleidoscopickitten '.draft = true' input.md
+cmp stdout modified-draft.golden
+! stderr .
+
+exec kaleidoscopickitten '.published = "2025-10-02"' input.md
+cmp stdout added-field.golden
+! stderr .
+
+exec kaleidoscopickitten '.tags += ["new-tag"]' input.md
+cmp stdout added-tag.golden
+! stderr .
+
+-- input.md --
+---
+title: My Blog Post
+draft: false
+tags:
+  - golang
+---
+
+# Content
+-- modified-draft.golden --
+title: My Blog Post
+draft: true
+tags:
+  - golang
+-- added-field.golden --
+title: My Blog Post
+draft: false
+tags:
+  - golang
+published: "2025-10-02"
+-- added-tag.golden --
+title: My Blog Post
+draft: false
+tags:
+  - golang
+  - new-tag
