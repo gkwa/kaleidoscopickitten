@@ -1,6 +1,7 @@
 # kaleidoscopickitten
 
 Query and modify YAML frontmatter in markdown files using yq expressions.
+
 Uses yqlib syntax from https://mikefarah.gitbook.io/yq/v/v4.x/.
 
 ## Usage
@@ -34,9 +35,3 @@ kaleidoscopickitten fm e '.title = "New Title"' file-without-frontmatter.md
 # Clear all frontmatter
 kaleidoscopickitten fm e '{}' file.md
 ```
-
-## Commands
-
-- `frontmatter` (alias: `fm`) `[expression] <file.md>` - Defaults to print mode when no subcommand specified
-  - `print` (alias: `p`) `[expression] <file.md>` - Query frontmatter without modifying the file. If no expression is provided, defaults to `.` (show all).
-  - `edit` (alias: `e`) `<expression> <file.md>` - Modify frontmatter and write changes back to the file
