@@ -1,0 +1,15 @@
+# Test modifying and outputting frontmatter only (default)
+exec kaleidoscopickitten '.draft = true' input.md
+cmp stdout frontmatter-only.golden
+! stderr .
+
+-- input.md --
+---
+title: My Blog Post
+draft: false
+---
+
+# Content here
+-- frontmatter-only.golden --
+title: My Blog Post
+draft: true

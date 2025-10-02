@@ -1,0 +1,25 @@
+# Test in-place editing
+cp input.md temp.md
+exec kaleidoscopickitten -w '.draft = true' temp.md
+! stdout .
+! stderr .
+cmp temp.md expected.golden
+
+-- input.md --
+---
+title: My Blog Post
+draft: false
+tags:
+  - golang
+---
+
+# Content here
+-- expected.golden --
+---
+title: My Blog Post
+draft: true
+tags:
+  - golang
+---
+
+# Content here
