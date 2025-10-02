@@ -1,22 +1,22 @@
 # Test complex yq expressions
 cp input.md input.md.backup
 
-exec kaleidoscopickitten '.tags | length' input.md
+exec kaleidoscopickitten frontmatter view '.tags | length' input.md
 cmp stdout tags-length.golden
 ! stderr .
 cmp input.md input.md.backup
 
-exec kaleidoscopickitten '.tags[0]' input.md
+exec kaleidoscopickitten frontmatter view '.tags[0]' input.md
 cmp stdout first-tag.golden
 ! stderr .
 cmp input.md input.md.backup
 
-exec kaleidoscopickitten 'select(.draft == false) | .title' input.md
+exec kaleidoscopickitten frontmatter view 'select(.draft == false) | .title' input.md
 cmp stdout conditional.golden
 ! stderr .
 cmp input.md input.md.backup
 
-exec kaleidoscopickitten 'select(.draft == true) | .title' input.md
+exec kaleidoscopickitten frontmatter view 'select(.draft == true) | .title' input.md
 cmp stdout empty.golden
 ! stderr .
 cmp input.md input.md.backup

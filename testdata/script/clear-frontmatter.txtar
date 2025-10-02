@@ -1,6 +1,6 @@
 # Test clearing all frontmatter
 cp input.md temp.md
-exec kaleidoscopickitten -w '{}' temp.md
+exec kaleidoscopickitten frontmatter edit '{}' temp.md
 ! stdout .
 ! stderr .
 cmp temp.md cleared.golden

@@ -1,13 +1,13 @@
 # Test creating frontmatter in file without any (in-place)
 cp no-frontmatter.md temp1.md
-exec kaleidoscopickitten -w '.title = "New Title"' temp1.md
+exec kaleidoscopickitten frontmatter edit '.title = "New Title"' temp1.md
 ! stdout .
 ! stderr .
 cmp temp1.md created-single.golden
 
 # Test creating multiple fields
 cp no-frontmatter.md temp2.md
-exec kaleidoscopickitten -w '.title = "New" | .draft = true' temp2.md
+exec kaleidoscopickitten frontmatter edit '.title = "New" | .draft = true' temp2.md
 ! stdout .
 ! stderr .
 cmp temp2.md created-multiple.golden

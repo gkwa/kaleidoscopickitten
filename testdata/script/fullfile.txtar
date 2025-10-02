@@ -1,7 +1,7 @@
-# Test modifying and outputting frontmatter only (default)
+# Test modifying and outputting frontmatter only (default with view)
 cp input.md input.md.backup
 
-exec kaleidoscopickitten '.draft = true' input.md
+exec kaleidoscopickitten frontmatter view '.draft = true' input.md
 cmp stdout frontmatter-only.golden
 ! stderr .
 cmp input.md input.md.backup

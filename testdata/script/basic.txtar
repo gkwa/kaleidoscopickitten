@@ -1,22 +1,22 @@
 # Test basic frontmatter extraction and querying
 cp input.md input.md.backup
 
-exec kaleidoscopickitten '.title' input.md
+exec kaleidoscopickitten frontmatter view '.title' input.md
 cmp stdout title.golden
 ! stderr .
 cmp input.md input.md.backup
 
-exec kaleidoscopickitten '.author' input.md
+exec kaleidoscopickitten frontmatter view '.author' input.md
 cmp stdout author.golden
 ! stderr .
 cmp input.md input.md.backup
 
-exec kaleidoscopickitten '.tags' input.md
+exec kaleidoscopickitten frontmatter view '.tags' input.md
 cmp stdout tags.golden
 ! stderr .
 cmp input.md input.md.backup
 
-exec kaleidoscopickitten '.metadata.category' input.md
+exec kaleidoscopickitten frontmatter view '.metadata.category' input.md
 cmp stdout category.golden
 ! stderr .
 cmp input.md input.md.backup

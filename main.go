@@ -1,13 +1,13 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 
 	"github.com/mikefarah/yq/v4/pkg/yqlib"
+	"github.com/spf13/cobra"
 	logging "gopkg.in/op/go-logging.v1"
 )
 
@@ -28,7 +28,6 @@ func processYAML(yamlString, expression string) (string, error) {
 	decoder := yqlib.NewYamlDecoder(yqlib.ConfiguredYamlPreferences)
 	encoder := yqlib.NewYamlEncoder(yqlib.ConfiguredYamlPreferences)
 
-	// If frontmatter is empty, use an empty YAML map
 	input := yamlString
 	if strings.TrimSpace(yamlString) == "" {
 		input = "{}"
@@ -80,42 +79,79 @@ func run(extractor FrontmatterExtractor, expression, mdContent string, fullFile 
 }
 
 func main() {
-	var inPlace bool
-	flag.BoolVar(&inPlace, "w", false, "write result back to file (in-place)")
-	flag.BoolVar(&inPlace, "write", false, "write result back to file (in-place)")
-	flag.Parse()
-
-	args := flag.Args()
-	if len(args) != 2 {
-		log.Fatal("usage: kaleidoscopickitten [-w] <expression> <file.md>")
+	rootCmd := &cobra.Command{
+		Use:   "kaleidoscopickitten",
+		Short: "Query and modify YAML frontmatter in markdown files",
+		Long:  "Query and modify YAML frontmatter in markdown files using yq expressions.",
 	}
 
-	expression := args[0]
-	filename := args[1]
-
-	mdBytes, err := os.ReadFile(filename)
-	if err != nil {
-		log.Fatalf("failed to read file %s: %v", filename, err)
-	}
-	mdContent := string(mdBytes)
-
-	extractor := NewYAMLFrontmatterExtractor()
-	result, err := run(extractor, expression, mdContent, inPlace)
-	if err != nil {
-		log.Fatal(err)
+	frontmatterCmd := &cobra.Command{
+		Use:   "frontmatter",
+		Short: "Work with YAML frontmatter",
+		Long:  "Query and modify YAML frontmatter in markdown files.",
 	}
 
-	if !inPlace {
-		fmt.Print(result)
-		return
+	viewCmd := &cobra.Command{
+		Use:   "view <expression> <file.md>",
+		Short: "View frontmatter (read-only)",
+		Long:  "Query and display YAML frontmatter without modifying the file.",
+		Args:  cobra.ExactArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			expression := args[0]
+			filename := args[1]
+
+			mdBytes, err := os.ReadFile(filename)
+			if err != nil {
+				log.Fatalf("failed to read file %s: %v", filename, err)
+			}
+			mdContent := string(mdBytes)
+
+			extractor := NewYAMLFrontmatterExtractor()
+			result, err := run(extractor, expression, mdContent, false)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Print(result)
+		},
 	}
 
-	// Only write if content has changed
-	if result == mdContent {
-		return
+	editCmd := &cobra.Command{
+		Use:   "edit <expression> <file.md>",
+		Short: "Edit frontmatter (in-place)",
+		Long:  "Modify YAML frontmatter and write changes back to the file.",
+		Args:  cobra.ExactArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			expression := args[0]
+			filename := args[1]
+
+			mdBytes, err := os.ReadFile(filename)
+			if err != nil {
+				log.Fatalf("failed to read file %s: %v", filename, err)
+			}
+			mdContent := string(mdBytes)
+
+			extractor := NewYAMLFrontmatterExtractor()
+			result, err := run(extractor, expression, mdContent, true)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			if result == mdContent {
+				return
+			}
+
+			if err := os.WriteFile(filename, []byte(result), 0o644); err != nil {
+				log.Fatalf("failed to write file %s: %v", filename, err)
+			}
+		},
 	}
 
-	if err := os.WriteFile(filename, []byte(result), 0o644); err != nil {
-		log.Fatalf("failed to write file %s: %v", filename, err)
+	frontmatterCmd.AddCommand(viewCmd)
+	frontmatterCmd.AddCommand(editCmd)
+	rootCmd.AddCommand(frontmatterCmd)
+
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
 	}
 }

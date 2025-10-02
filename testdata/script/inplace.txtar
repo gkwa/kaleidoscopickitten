@@ -1,6 +1,6 @@
 # Test in-place editing
 cp input.md temp.md
-exec kaleidoscopickitten -w '.draft = true' temp.md
+exec kaleidoscopickitten frontmatter edit '.draft = true' temp.md
 ! stdout .
 ! stderr .
 cmp temp.md expected.golden
