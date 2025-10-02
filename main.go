@@ -45,8 +45,8 @@ func processYAML(yamlString, expression string) (string, error) {
 func reconstructFile(processedFrontmatter, body string) string {
 	var output strings.Builder
 	output.WriteString("---\n")
-	output.WriteString(strings.TrimSpace(processedFrontmatter))
-	output.WriteString("\n---\n")
+	output.WriteString(strings.TrimSpace(processedFrontmatter) + "\n")
+	output.WriteString("---\n")
 	output.WriteString(body)
 	return output.String()
 }
