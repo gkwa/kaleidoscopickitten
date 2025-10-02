@@ -36,7 +36,7 @@ func processYAML(yamlString, expression string) (string, error) {
 	stringEval := yqlib.NewStringEvaluator()
 	result, err := stringEval.Evaluate(expression, input, encoder, decoder)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("yaml processing error: %w", err)
 	}
 
 	return result, nil
@@ -57,7 +57,17 @@ func processFrontmatter(extractor FrontmatterExtractor, expression, mdContent st
 		return "", err
 	}
 
-	return processYAML(result.Frontmatter, expression)
+	// Check for validation errors
+	if !result.IsValid {
+		return "", result.ValidationError
+	}
+
+	processed, err := processYAML(result.Frontmatter, expression)
+	if err != nil {
+		return "", err
+	}
+
+	return processed, nil
 }
 
 func run(extractor FrontmatterExtractor, expression, mdContent string, fullFile bool) (string, error) {
@@ -86,19 +96,28 @@ func main() {
 	}
 
 	frontmatterCmd := &cobra.Command{
-		Use:   "frontmatter",
-		Short: "Work with YAML frontmatter",
-		Long:  "Query and modify YAML frontmatter in markdown files.",
+		Use:     "frontmatter",
+		Aliases: []string{"fm"},
+		Short:   "Work with YAML frontmatter",
+		Long:    "Query and modify YAML frontmatter in markdown files.",
 	}
 
 	viewCmd := &cobra.Command{
-		Use:   "view <expression> <file.md>",
-		Short: "View frontmatter (read-only)",
-		Long:  "Query and display YAML frontmatter without modifying the file.",
-		Args:  cobra.ExactArgs(2),
+		Use:     "view [expression] <file.md>",
+		Aliases: []string{"v"},
+		Short:   "View frontmatter (read-only)",
+		Long:    "Query and display YAML frontmatter without modifying the file. If no expression is provided, defaults to '.' (show all).",
+		Args:    cobra.RangeArgs(1, 2),
 		Run: func(cmd *cobra.Command, args []string) {
-			expression := args[0]
-			filename := args[1]
+			var expression, filename string
+
+			if len(args) == 1 {
+				expression = "."
+				filename = args[0]
+			} else {
+				expression = args[0]
+				filename = args[1]
+			}
 
 			mdBytes, err := os.ReadFile(filename)
 			if err != nil {
@@ -117,10 +136,11 @@ func main() {
 	}
 
 	editCmd := &cobra.Command{
-		Use:   "edit <expression> <file.md>",
-		Short: "Edit frontmatter (in-place)",
-		Long:  "Modify YAML frontmatter and write changes back to the file.",
-		Args:  cobra.ExactArgs(2),
+		Use:     "edit <expression> <file.md>",
+		Aliases: []string{"e"},
+		Short:   "Edit frontmatter (in-place)",
+		Long:    "Modify YAML frontmatter and write changes back to the file.",
+		Args:    cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			expression := args[0]
 			filename := args[1]

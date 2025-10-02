@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"strings"
 )
 
@@ -12,10 +13,17 @@ func NewYAMLFrontmatterExtractor() *YAMLFrontmatterExtractor {
 }
 
 type ExtractionResult struct {
-	Frontmatter    string
-	Body           string
-	HasFrontmatter bool
+	Frontmatter     string
+	Body            string
+	HasFrontmatter  bool
+	IsValid         bool
+	ValidationError error
 }
+
+var (
+	ErrInvalidFrontmatter = errors.New("invalid frontmatter: missing closing delimiter")
+	ErrScalarFrontmatter  = errors.New("invalid frontmatter: must be a YAML object (key-value pairs), not a scalar value")
+)
 
 func (e *YAMLFrontmatterExtractor) Extract(content string) (*ExtractionResult, error) {
 	scanner := bufio.NewScanner(strings.NewReader(content))
@@ -50,9 +58,29 @@ func (e *YAMLFrontmatterExtractor) Extract(content string) (*ExtractionResult, e
 		body.WriteString("\n")
 	}
 
-	return &ExtractionResult{
+	result := &ExtractionResult{
 		Frontmatter:    frontmatter.String(),
 		Body:           body.String(),
 		HasFrontmatter: delimiterCount >= 2,
-	}, nil
+		IsValid:        true,
+	}
+
+	// Validate frontmatter structure
+	if delimiterCount == 1 {
+		result.IsValid = false
+		result.ValidationError = ErrInvalidFrontmatter
+		return result, nil
+	}
+
+	// Check if frontmatter is a scalar value (not a key-value structure)
+	if delimiterCount >= 2 {
+		fm := strings.TrimSpace(result.Frontmatter)
+		if fm != "" && !strings.Contains(fm, ":") && fm != "{}" {
+			result.IsValid = false
+			result.ValidationError = ErrScalarFrontmatter
+			return result, nil
+		}
+	}
+
+	return result, nil
 }

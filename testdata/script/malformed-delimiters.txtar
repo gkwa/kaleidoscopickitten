@@ -1,0 +1,33 @@
+# Test file with only opening delimiter
+cp only-opening.md only-opening.md.backup
+
+! exec kaleidoscopickitten frontmatter view '.title' only-opening.md
+stderr 'invalid frontmatter'
+cmp only-opening.md only-opening.md.backup
+
+# Test in-place edit should fail gracefully
+cp only-opening.md temp.md
+! exec kaleidoscopickitten frontmatter edit '.title = "New Title"' temp.md
+stderr 'invalid frontmatter'
+
+# Test file with no delimiters but looks like frontmatter
+cp no-delimiters.md no-delimiters.md.backup
+
+exec kaleidoscopickitten frontmatter view '.title' no-delimiters.md
+cmp stdout empty.golden
+! stderr .
+cmp no-delimiters.md no-delimiters.md.backup
+
+-- only-opening.md --
+---
+title: Test
+author: Jane
+
+# This looks like content but delimiter never closed
+-- no-delimiters.md --
+title: Test
+author: Jane
+
+# Content without frontmatter delimiters
+-- empty.golden --
+null

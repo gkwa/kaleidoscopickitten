@@ -1,0 +1,51 @@
+# Test command aliases
+cp input.md input.md.backup
+
+# Test fm alias for frontmatter
+exec kaleidoscopickitten fm view '.title' input.md
+cmp stdout title.golden
+! stderr .
+cmp input.md input.md.backup
+
+# Test v alias for view
+exec kaleidoscopickitten fm v '.author' input.md
+cmp stdout author.golden
+! stderr .
+cmp input.md input.md.backup
+
+# Test e alias for edit
+cp input.md temp.md
+exec kaleidoscopickitten fm e '.draft = true' temp.md
+! stdout .
+! stderr .
+cmp temp.md edited.golden
+
+# Test view without expression (defaults to '.')
+exec kaleidoscopickitten fm v input.md
+cmp stdout all.golden
+! stderr .
+
+-- input.md --
+---
+title: My Blog Post
+author: Jane Doe
+draft: false
+---
+
+# Content here
+-- title.golden --
+My Blog Post
+-- author.golden --
+Jane Doe
+-- edited.golden --
+---
+title: My Blog Post
+author: Jane Doe
+draft: true
+---
+
+# Content here
+-- all.golden --
+title: My Blog Post
+author: Jane Doe
+draft: false

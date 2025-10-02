@@ -1,0 +1,20 @@
+# Test file with invalid YAML syntax in frontmatter
+cp invalid-yaml.md invalid-yaml.md.backup
+
+! exec kaleidoscopickitten frontmatter view '.title' invalid-yaml.md
+stderr 'yaml'
+cmp invalid-yaml.md invalid-yaml.md.backup
+
+# Test in-place edit should fail
+cp invalid-yaml.md temp.md
+! exec kaleidoscopickitten frontmatter edit '.title = "New Title"' temp.md
+stderr 'yaml'
+
+-- invalid-yaml.md --
+---
+title: Test
+  invalid indentation:
+author: Jane
+---
+
+# Content

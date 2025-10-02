@@ -1,0 +1,18 @@
+# Test handling of invalid frontmatter (scalar value instead of object)
+cp invalid-scalar.md invalid-scalar.md.backup
+
+! exec kaleidoscopickitten frontmatter view '.title' invalid-scalar.md
+stderr 'invalid frontmatter'
+cmp invalid-scalar.md invalid-scalar.md.backup
+
+# Test in-place edit with invalid frontmatter should fail gracefully
+cp invalid-scalar.md temp.md
+! exec kaleidoscopickitten frontmatter edit '.title = "New Title"' temp.md
+stderr 'invalid frontmatter'
+
+-- invalid-scalar.md --
+---
+test
+---
+
+# Content here
