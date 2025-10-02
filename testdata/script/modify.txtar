@@ -1,15 +1,20 @@
 # Test modifying frontmatter values
+cp input.md input.md.backup
+
 exec kaleidoscopickitten '.draft = true' input.md
 cmp stdout modified-draft.golden
 ! stderr .
+cmp input.md input.md.backup
 
 exec kaleidoscopickitten '.published = "2025-10-02"' input.md
 cmp stdout added-field.golden
 ! stderr .
+cmp input.md input.md.backup
 
 exec kaleidoscopickitten '.tags += ["new-tag"]' input.md
 cmp stdout added-tag.golden
 ! stderr .
+cmp input.md input.md.backup
 
 -- input.md --
 ---
