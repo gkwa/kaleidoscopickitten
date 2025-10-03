@@ -1,4 +1,4 @@
-package main
+package frontmatter
 
 import (
 	"bufio"
@@ -35,7 +35,6 @@ func (e *YAMLFrontmatterExtractor) Extract(content string) (*ExtractionResult, e
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// Handle frontmatter delimiters
 		if line == "---" {
 			delimiterCount++
 			if delimiterCount == 1 {
@@ -65,14 +64,12 @@ func (e *YAMLFrontmatterExtractor) Extract(content string) (*ExtractionResult, e
 		IsValid:        true,
 	}
 
-	// Validate frontmatter structure
 	if delimiterCount == 1 {
 		result.IsValid = false
 		result.ValidationError = ErrInvalidFrontmatter
 		return result, nil
 	}
 
-	// Check if frontmatter is a scalar value (not a key-value structure)
 	if delimiterCount >= 2 {
 		fm := strings.TrimSpace(result.Frontmatter)
 		if fm != "" && !strings.Contains(fm, ":") && fm != "{}" {
